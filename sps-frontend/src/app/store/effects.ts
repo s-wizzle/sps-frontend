@@ -12,16 +12,4 @@ export class SpsGameEffects {
         private actions$: Actions,
         private spsGameApi: SpsGameApi
     ) {}
-
-    loadGames$ = createEffect(() =>
-        this.actions$.pipe(
-            ofType(loadGames),  // Hört auf die loadGames-Aktion
-            mergeMap(() =>
-                this.spsGameApi.getGames().pipe(  // Ruft den HTTP-Request auf
-                    map(games => loadGamesSuccess({ payload: games })),
-                    catchError(error => [loadGamesFailure({ error })])
-                )
-            )
-        )
-    );
 }

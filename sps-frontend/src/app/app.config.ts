@@ -4,6 +4,8 @@ import { appRoutes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
+import {provideState, provideStore} from "@ngrx/store";
+import {spsGameFeature} from "./store/reducer";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,5 +17,7 @@ export const appConfig: ApplicationConfig = {
         preset: Aura,
       },
     }),
+    provideStore(),
+      provideState(spsGameFeature)
   ],
 };

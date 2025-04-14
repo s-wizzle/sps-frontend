@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { GamesEntity } from '@sps-frontend/feature-stone-paper-scissors';
 
 @Component({
   selector: 'metrics-page',
@@ -7,4 +8,6 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
 })
-export class MetricsPageComponent {}
+export class MetricsPageComponent {
+  @Input() games: GamesEntity[] = [];
+}

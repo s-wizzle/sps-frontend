@@ -16,6 +16,10 @@
     "@angular/platform-browser": "~19.2.0",
     "@angular/platform-browser-dynamic": "~19.2.0",
     "@angular/router": "~19.2.0",
+    "@nrwl/angular": "^19.8.4",
+    "@primeng/themes": "^19.0.10",
+    "primeicons": "^7.0.0",
+    "primeng": "^19.0.10",
     "rxjs": "~7.8.0",
     "zone.js": "~0.15.0"
   },
@@ -27,6 +31,7 @@
     "@angular/compiler-cli": "~19.2.0",
     "@angular/language-service": "~19.2.0",
     "@eslint/js": "^9.8.0",
+    "@nrwl/workspace": "^19.8.4",
     "@nx/angular": "20.7.2",
     "@nx/devkit": "20.7.2",
     "@nx/eslint": "20.7.2",

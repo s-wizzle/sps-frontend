@@ -21,14 +21,10 @@ export const initialStonePaperScissorsState: StonePaperScissorsState =
 
 const reducer = createReducer(
   initialStonePaperScissorsState,
-  on(StonePaperScissorsActions.loadGamesSuccess, (state) => ({
-    ...state,
-    status: 'loaded',
-    error: null,
-  })),
-  on(StonePaperScissorsActions.loadGamesSuccess, (state, { games }) =>
-    gamesAdapter.setAll(games, { ...state, loaded: true })
-  ),
+  on(StonePaperScissorsActions.loadGamesSuccess, (state, { games }) => {
+    console.debug('loadGamesSuccess action triggered');
+    return gamesAdapter.setAll(games, { ...state, loaded: true });
+  }),
   on(StonePaperScissorsActions.loadGamesFailure, (state, { error }) => ({
     ...state,
     error,

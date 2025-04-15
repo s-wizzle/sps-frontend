@@ -4,7 +4,6 @@ import { Route } from '@angular/router';
 import { StonePaperScissorsEffects } from './store/stone-paper-scissors.effects';
 import * as fromStonePaperScissors from './store/stone-paper-scissors.reducer';
 import { StonePaperScissorsPageComponent } from './pages/stone-paper-scissors-page.component';
-import { provideStoreDevtools } from '@ngrx/store-devtools';
 
 export const stonePaperScissorsRoutes: Route[] = [
   {
@@ -15,8 +14,7 @@ export const stonePaperScissorsRoutes: Route[] = [
         fromStonePaperScissors.GAMES_FEATURE_KEY,
         fromStonePaperScissors.stonePaperScissorsReducer
       ),
-      provideEffects(StonePaperScissorsEffects),
-      provideStoreDevtools(),
+      provideEffects(StonePaperScissorsEffects)
     ],
   },
 ];

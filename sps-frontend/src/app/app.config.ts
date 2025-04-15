@@ -19,9 +19,13 @@ export const appConfig: ApplicationConfig = {
         preset: Aura,
       },
     }),
-    provideStore(),
+    provideStore({}, {}),
     provideEffects(),
-    provideStoreDevtools(),
+    provideStoreDevtools({
+      name: 'StonePaperScissors App',
+      maxAge: 25,
+      logOnly: false
+    }),
     provideHttpClient(),
   ],
 };

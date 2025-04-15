@@ -1,13 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { GamesEntity } from '@sps-frontend/feature-stone-paper-scissors';
-import { JsonPipe } from '@angular/common';
+import { StonePaperScissorsTableComponent } from '../components/stone-paper-scissors-table.components';
 
 @Component({
   selector: 'data-page',
-  template: `Games: {{ games | json }}`,
+  template: ` <stone-paper-scissors-table [games]="games"/> `,
   styles: ``,
   standalone: true,
-  imports: [JsonPipe],
+  imports: [StonePaperScissorsTableComponent],
 })
 export class DataPageComponent {
   @Input() games: GamesEntity[] = [];

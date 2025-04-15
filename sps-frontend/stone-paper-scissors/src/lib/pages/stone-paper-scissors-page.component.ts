@@ -30,7 +30,7 @@ import { GamePageComponent } from './game-page.component';
           <metrics-page />
         </p-tabpanel>
         <p-tabpanel value="2">
-          <data-page [games]="games()"/>/>
+          <data-page [games]="games()"/>
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>

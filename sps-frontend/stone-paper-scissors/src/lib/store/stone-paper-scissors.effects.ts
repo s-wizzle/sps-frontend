@@ -13,7 +13,6 @@ export class StonePaperScissorsEffects {
     this.actions$.pipe(
       ofType(StonePaperScissorsActions.loadGames),
       switchMap(() => {
-        console.log('loadGames effect called');
         return this.api
           .getGames()
           .pipe(
@@ -34,7 +33,6 @@ export class StonePaperScissorsEffects {
         ofType(StonePaperScissorsActions.loadGamesSuccess),
         map((action) => {
           let { games } = action;
-          console.log('loadGamesSuccess effect called, returned ' + games);
         })
       ),
     { dispatch: false }
@@ -46,7 +44,6 @@ export class StonePaperScissorsEffects {
         ofType(StonePaperScissorsActions.loadGamesFailure),
         map((action) => {
           let { error } = action;
-          console.log('loadGamesFailure effect called, returned ' + error.message);
         })
       ),
     { dispatch: false }

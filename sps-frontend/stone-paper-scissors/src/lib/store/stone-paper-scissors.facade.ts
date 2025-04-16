@@ -16,7 +16,6 @@ export class StonePaperScissorsFacade {
     error = this.store.selectSignal((state) => state.stonePaperScissors.error);
 
     load() {
-        console.log('load called');
         this.store.dispatch(StonePaperScissorsActions.loadGames());
     }
 }

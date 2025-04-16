@@ -10,7 +10,6 @@ export class GamesApi {
   constructor(private http: HttpClient) {}
 
   getGames() {
-    console.log('Fetching games from API');
     return this.http.get<any[]>(this.baseUrl);
   }
 }

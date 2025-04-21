@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { GamesEntity } from '@sps-frontend/feature-stone-paper-scissors';
-import { StonePaperScissorsTableComponent } from '../components/stone-paper-scissors-table.components';
+import { StonePaperScissorsTableComponent } from '../components/stone-paper-scissors-table.component';
 
 @Component({
   selector: 'data-page',

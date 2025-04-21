@@ -1,3 +1,2 @@
-.p-card-body {
-    padding: 8px !important; /* Set padding only for the card body */
-}
+@import "primeflex/primeflex.css";
+@import "primeicons/primeicons.css";

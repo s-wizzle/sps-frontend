@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class GamesApi {
-  private baseUrl = 'http://localhost:8080/api/sps-game/game';
+  private baseUrl = 'http://localhost:8080/api/sps-games';
 
   constructor(private http: HttpClient) {}
 

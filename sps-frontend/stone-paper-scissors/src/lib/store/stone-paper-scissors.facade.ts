@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as StonePaperScissorsActions from './stone-paper-scissors.actions';
-import { selectAllGames } from '@sps-frontend/feature-stone-paper-scissors';
+import {GamesEntity, selectAllGames, selectSelectedGame} from '@sps-frontend/feature-stone-paper-scissors';
 
 @Injectable({ providedIn: 'root' })
 export class StonePaperScissorsFacade {
@@ -12,6 +12,7 @@ export class StonePaperScissorsFacade {
   }
 
   games = this.store.selectSignal(selectAllGames);
+  selectedGame = this.store.selectSignal(selectSelectedGame);
   status = this.store.selectSignal((state) => state.stonePaperScissors.status);
   error = this.store.selectSignal((state) => state.stonePaperScissors.error);
 
@@ -21,5 +22,9 @@ export class StonePaperScissorsFacade {
 
   initGame() {
     this.store.dispatch(StonePaperScissorsActions.requestNewGame());
+  }
+
+  updateGame(gameId: number, updatedGame: Partial<GamesEntity>) {
+    this.store.dispatch(StonePaperScissorsActions.updateGame({ gameId, updateGame: updatedGame }));
   }
 }

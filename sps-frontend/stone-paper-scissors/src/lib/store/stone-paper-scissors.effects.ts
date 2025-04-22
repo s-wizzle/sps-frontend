@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import * as StonePaperScissorsActions from './stone-paper-scissors.actions';
-import { catchError, map, of, switchMap } from 'rxjs';
+import {catchError, map, mergeMap, of, switchMap} from 'rxjs';
 import { SpsGameApi } from './sps-game.api';
 
 @Injectable()
@@ -56,8 +56,10 @@ export class StonePaperScissorsEffects {
         return this.api
           .requestNewGame()
           .pipe(
-            map((data) =>
-              StonePaperScissorsActions.addGame({ game: data })
+            mergeMap((data) => [
+              StonePaperScissorsActions.addGame({ game: data }),
+                StonePaperScissorsActions.setSelectedGame({ gameId: data.id }),
+                ]
             )
           );
       }),

@@ -6,7 +6,7 @@ import * as StonePaperScissorsActions from './stone-paper-scissors.actions';
 export const GAMES_FEATURE_KEY = 'games';
 
 export interface StonePaperScissorsState extends EntityState<GamesEntity> {
-  selectedId?: number;
+  selectedId: number | null;
   status: string;
   error?: string | null;
 }
@@ -16,6 +16,7 @@ export const gamesAdapter: EntityAdapter<GamesEntity> =
 
 export const initialStonePaperScissorsState: StonePaperScissorsState =
   gamesAdapter.getInitialState({
+    selectedId: null,
     status: 'default',
   });
 
@@ -32,6 +33,23 @@ const reducer = createReducer(
   on(StonePaperScissorsActions.addGame, (state, { game }) => {
     console.debug('addGame action triggered');
     return gamesAdapter.addOne(game, state);
+  }),
+  on(StonePaperScissorsActions.setSelectedGame, (state, { gameId }) => {
+    console.log('setSelectedGame action triggered');
+    return {
+      ...state,
+      selectedId: gameId,
+    };
+  }),
+  on(StonePaperScissorsActions.updateGame, (state, { gameId, updateGame }) => {
+    console.log('updateGame action triggered');
+    return gamesAdapter.updateOne(
+      {
+        id: gameId,
+        changes: updateGame,
+      },
+      state
+    );
   })
 );
 

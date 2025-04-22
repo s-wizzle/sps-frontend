@@ -18,7 +18,12 @@ export class SpsGameApi {
     return this.http.post<GamesEntity>(this.baseUrl + 'sps-games', {});
   }
 
-  getNpcChoice() {
-    return this.http.get<string>(this.baseUrl + 'sps-gameplay/npc/choice');
+  getNpcChoice(mode: string) {
+    return this.http.get<{ choice: string }>(
+      this.baseUrl + 'sps-gameplay/npc/choice',
+      {
+        params: { mode },
+      }
+    );
   }
 }

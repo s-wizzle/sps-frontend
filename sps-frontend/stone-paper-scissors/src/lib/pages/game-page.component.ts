@@ -2,8 +2,11 @@ import {
   Component,
   computed,
   EventEmitter,
+  Input,
+  OnChanges,
   Output,
   signal,
+  SimpleChanges,
 } from '@angular/core';
 import { GameOptionComponent } from '../components/game-option.component';
 import { NgForOf, NgIf } from '@angular/common';
@@ -141,12 +144,14 @@ import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
     Checkbox,
   ],
 })
-export class GamePageComponent {
+export class GamePageComponent implements OnChanges {
   private _userSelection = signal<Choice | null>(null);
   private _npcSelection = signal<Choice | null>(null);
   private _revealed = signal(false);
 
   @Output() newGameEvent = new EventEmitter<void>();
+  @Input() npcChoice: Choice | null = null;
+  @Output() npcChoiceRequested = new EventEmitter<string>();
 
   userSelection = this._userSelection.asReadonly();
   npcSelection = this._npcSelection.asReadonly();
@@ -159,10 +164,8 @@ export class GamePageComponent {
 
   reveal() {
     if (!this._revealed()) {
-      const availableChoices = this.choices();
-      const random =
-        availableChoices[Math.floor(Math.random() * this.choices.length)];
-      this._npcSelection.set(random);
+      this.npcChoiceRequested.emit(GAME_MODE[this.selectedGameMode().value]);
+
       this._revealed.set(true);
     }
   }
@@ -202,5 +205,12 @@ export class GamePageComponent {
 
   initGame() {
     this.newGameEvent.emit();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['npcChoice'] && this.npcChoice) {
+      this._npcSelection.set(this.npcChoice);
+      this._revealed.set(true);
+    }
   }
 }

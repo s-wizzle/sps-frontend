@@ -57,7 +57,7 @@ export class StonePaperScissorsEffects {
           .requestNewGame()
           .pipe(
             map((data) =>
-              StonePaperScissorsActions.initializeGame({ game: data })
+              StonePaperScissorsActions.addGame({ game: data })
             )
           );
       }),

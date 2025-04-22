@@ -1,21 +1,25 @@
-import {inject, Injectable} from "@angular/core";
-import {Store} from "@ngrx/store";
+import { inject, Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import * as StonePaperScissorsActions from './stone-paper-scissors.actions';
-import {selectAllGames} from "@sps-frontend/feature-stone-paper-scissors";
+import { selectAllGames } from '@sps-frontend/feature-stone-paper-scissors';
 
 @Injectable({ providedIn: 'root' })
 export class StonePaperScissorsFacade {
-    store = inject(Store);
+  store = inject(Store);
 
-    dispatch(action: any) {
-        this.store.dispatch(action);
-    }
+  dispatch(action: any) {
+    this.store.dispatch(action);
+  }
 
-    games = this.store.selectSignal(selectAllGames);
-    status = this.store.selectSignal((state) => state.stonePaperScissors.status);
-    error = this.store.selectSignal((state) => state.stonePaperScissors.error);
+  games = this.store.selectSignal(selectAllGames);
+  status = this.store.selectSignal((state) => state.stonePaperScissors.status);
+  error = this.store.selectSignal((state) => state.stonePaperScissors.error);
 
-    load() {
-        this.store.dispatch(StonePaperScissorsActions.loadGames());
-    }
+  load() {
+    this.store.dispatch(StonePaperScissorsActions.loadGames());
+  }
+
+  initGame() {
+    this.store.dispatch(StonePaperScissorsActions.requestNewGame());
+  }
 }

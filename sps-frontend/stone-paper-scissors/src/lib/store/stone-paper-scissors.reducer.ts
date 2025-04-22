@@ -28,7 +28,11 @@ const reducer = createReducer(
   on(StonePaperScissorsActions.loadGamesFailure, (state, { error }) => ({
     ...state,
     error,
-  }))
+  })),
+  on(StonePaperScissorsActions.addGame, (state, { game }) => {
+    console.debug('addGame action triggered');
+    return gamesAdapter.addOne(game, state);
+  })
 );
 
 export function stonePaperScissorsReducer(

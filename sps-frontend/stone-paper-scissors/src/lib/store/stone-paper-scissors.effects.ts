@@ -2,12 +2,12 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import * as StonePaperScissorsActions from './stone-paper-scissors.actions';
 import { catchError, map, of, switchMap } from 'rxjs';
-import { GamesApi } from './games.api';
+import { SpsGameApi } from './sps-game.api';
 
 @Injectable()
 export class StonePaperScissorsEffects {
   private actions$ = inject(Actions);
-  private api = inject(GamesApi);
+  private api = inject(SpsGameApi);
 
   onLoad$ = createEffect(() =>
     this.actions$.pipe(
@@ -47,5 +47,33 @@ export class StonePaperScissorsEffects {
         })
       ),
     { dispatch: false }
+  );
+
+  onRequestNewGame$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(StonePaperScissorsActions.requestNewGame),
+      switchMap(() => {
+        return this.api
+          .requestNewGame()
+          .pipe(
+            map((data) =>
+              StonePaperScissorsActions.initializeGame({ game: data })
+            )
+          );
+      }),
+      catchError((error) => {
+        return of(StonePaperScissorsActions.requestNewGameFailure({ error }));
+      })
+    )
+  );
+
+  initializeGame$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(StonePaperScissorsActions.initializeGame),
+      map((action) => {
+        let { game } = action;
+        return StonePaperScissorsActions.addGame({ game });
+      })
+    )
   );
 }

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
+import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
 
 @Component({
   selector: 'game-mode-selector',
@@ -26,12 +27,12 @@ import { FormsModule } from '@angular/forms';
   ],
 })
 export class GameModeSelectorComponent {
-  @Input() selected = { label: 'Default', value: 'default' };
-  @Output() modeChanged = new EventEmitter<{ label: string; value: string }>();
+  @Input() selected = { label: 'Default', value: GAME_MODE.DEFAULT };
+  @Output() modeChanged = new EventEmitter<{ label: string; value: GAME_MODE }>();
 
   modes = [
-    { label: 'Default', value: 'default' },
-    { label: 'Hard', value: 'hard' },
-    { label: 'Expert', value: 'expert' },
+    { label: 'Default', value: GAME_MODE.DEFAULT },
+    { label: 'Hard', value: GAME_MODE.HARD },
+    { label: 'Expert', value: GAME_MODE.EXPERT },
   ];
 }

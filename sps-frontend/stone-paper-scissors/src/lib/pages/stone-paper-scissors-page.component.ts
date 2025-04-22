@@ -25,7 +25,7 @@ import { ActivatedRoute, Router } from '@angular/router';
       </p-tablist>
       <p-tabpanels>
         <p-tabpanel [value]="0">
-          <game-page/>
+          <game-page (newGameEvent)="startGame()"/>
         </p-tabpanel>
         <p-tabpanel [value]="1">
           <metrics-page/>
@@ -67,6 +67,10 @@ export class StonePaperScissorsPageComponent implements OnInit {
 
   load() {
     this.store.load();
+  }
+
+  startGame() {
+    this.store.initGame();
   }
 
   onTabChange(event: any) {

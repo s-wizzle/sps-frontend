@@ -1,4 +1,10 @@
-import { Component, computed, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  EventEmitter,
+  Output,
+  signal,
+} from '@angular/core';
 import { GameOptionComponent } from '../components/game-option.component';
 import { NgForOf, NgIf } from '@angular/common';
 import { Card } from 'primeng/card';
@@ -9,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 import { GameModeSelectorComponent } from '../components/game-mode-selection.component';
 import { Choice, gameChoices } from '../utils/game-choices';
 import { Checkbox } from 'primeng/checkbox';
+import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
 
 @Component({
   selector: 'game-page',
@@ -43,9 +50,15 @@ import { Checkbox } from 'primeng/checkbox';
         [disabled]="!userSelection()"
       />
       <p-button
-        class="reset-button"
+        class="reveal-button"
+        label="New Game"
+        (onClick)="initGame()"
+        [disabled]="userSelection()"
+      />
+      <p-button
         icon="pi pi-refresh"
         (onClick)="reset()"
+        [disabled]="!userSelection()"
         label="Zurücksetzen"
       />
     </div>
@@ -106,6 +119,7 @@ import { Checkbox } from 'primeng/checkbox';
       .reveal-button {
         margin: 1rem 0;
       }
+
       .button-container {
         display: flex;
         gap: 1rem;
@@ -132,6 +146,8 @@ export class GamePageComponent {
   private _npcSelection = signal<Choice | null>(null);
   private _revealed = signal(false);
 
+  @Output() newGameEvent = new EventEmitter<void>();
+
   userSelection = this._userSelection.asReadonly();
   npcSelection = this._npcSelection.asReadonly();
   revealed = this._revealed.asReadonly();
@@ -151,27 +167,27 @@ export class GamePageComponent {
     }
   }
 
-  selectedGameMode = signal<{ label: string; value: string }>({
+  selectedGameMode = signal<{ label: string; value: GAME_MODE }>({
     label: 'Default',
-    value: 'default',
+    value: GAME_MODE.DEFAULT,
   });
 
   readonly choices = computed(() => {
     switch (this.selectedGameMode().value) {
-      case 'default':
+      case GAME_MODE.DEFAULT:
         return gameChoices.filter((c) =>
           ['stone', 'paper', 'scissors'].includes(c.label)
         );
-      case 'hard':
+      case GAME_MODE.HARD:
         return gameChoices.filter((c) =>
           ['stone', 'paper', 'scissors', 'lizard', 'spock'].includes(c.label)
         );
-      case 'expert':
+      case GAME_MODE.EXPERT:
       default:
         return gameChoices;
     }
   });
-  onGameModeChange(mode: { label: string; value: string }) {
+  onGameModeChange(mode: { label: string; value: GAME_MODE }) {
     this.selectedGameMode.set(mode);
     this._userSelection.set(null);
     this._npcSelection.set(null);
@@ -182,5 +198,9 @@ export class GamePageComponent {
     this._userSelection.set(null);
     this._npcSelection.set(null);
     this._revealed.set(false);
+  }
+
+  initGame() {
+    this.newGameEvent.emit();
   }
 }

@@ -6,15 +6,19 @@ import { GamesEntity } from '@sps-frontend/feature-stone-paper-scissors';
   providedIn: 'root',
 })
 export class SpsGameApi {
-  private baseUrl = 'http://localhost:8080/api/sps-games';
+  private baseUrl = 'http://localhost:8080/api/';
 
   constructor(private http: HttpClient) {}
 
   getGames() {
-    return this.http.get<GamesEntity[]>(this.baseUrl);
+    return this.http.get<GamesEntity[]>(this.baseUrl + 'sps-games');
   }
 
   requestNewGame() {
-    return this.http.post<GamesEntity>(this.baseUrl, {});
+    return this.http.post<GamesEntity>(this.baseUrl + 'sps-games', {});
+  }
+
+  getNpcChoice() {
+    return this.http.get<string>(this.baseUrl + 'sps-gameplay/npc/choice');
   }
 }

@@ -9,7 +9,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { GameOptionComponent } from '../components/game-option.component';
-import { NgForOf, NgIf } from '@angular/common';
+import { JsonPipe, NgForOf, NgIf } from '@angular/common';
 import { Card } from 'primeng/card';
 import { Button } from 'primeng/button';
 import { Divider } from 'primeng/divider';
@@ -18,7 +18,10 @@ import { FormsModule } from '@angular/forms';
 import { GameModeSelectorComponent } from '../components/game-mode-selection.component';
 import { Choice, gameChoices } from '../utils/game-choices';
 import { Checkbox } from 'primeng/checkbox';
-import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
+import {
+  GAME_MODE,
+  GamesEntity,
+} from '@sps-frontend/feature-stone-paper-scissors';
 
 @Component({
   selector: 'game-page',
@@ -30,11 +33,11 @@ import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
     </game-mode-selector>
 
     <div class="selection">
-      <ng-container *ngIf="npcSelection(); else noNpcChoice">
+      <ng-container *ngIf="selectedGame?.npcChoice; else noNpcChoice">
         <game-option
-          [label]="npcSelection()?.label || ''"
+          [label]="selectedGame?.npcChoice || ''"
           [selected]="true"
-          [icon]="npcSelection()?.icon || ''"
+          [icon]="getIconForChoice(selectedGame?.npcChoice)"
         >
         </game-option>
       </ng-container>
@@ -50,28 +53,28 @@ import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
         class="reveal-button"
         label="Reveal"
         (onClick)="reveal()"
-        [disabled]="!userSelection()"
+        [disabled]="!selectedGame?.playerChoice"
       />
       <p-button
         class="reveal-button"
         label="New Game"
         (onClick)="initGame()"
-        [disabled]="userSelection()"
+        [disabled]="selectedGame?.playerChoice"
       />
       <p-button
         icon="pi pi-refresh"
         (onClick)="reset()"
-        [disabled]="!userSelection()"
+        [disabled]="!selectedGame?.playerChoice"
         label="Zurücksetzen"
       />
     </div>
 
     <div class="selection">
-      <ng-container *ngIf="userSelection(); else noUserChoice">
+      <ng-container *ngIf="selectedGame?.playerChoice; else noUserChoice">
         <game-option
-          [label]="userSelection()?.label || ''"
+          [label]="selectedGame?.playerChoice || ''"
           [selected]="true"
-          [icon]="userSelection()?.icon || ''"
+          [icon]="getIconForChoice(selectedGame?.playerChoice)"
         >
         </game-option>
       </ng-container>
@@ -87,7 +90,7 @@ import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
       <game-option
         *ngFor="let choice of choices()"
         [label]="choice.label"
-        [selected]="userSelection() === choice"
+        [selected]="selectedGame?.playerChoice === choice.label"
         [icon]="choice.icon"
         (optionSelected)="select($event)"
       >
@@ -98,6 +101,8 @@ import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
       <p-checkbox [(ngModel)]="isLoggingEnabled" />
       <label> Ergebnisse loggen</label>
     </div>
+
+    {{ selectedGame | json }}
   `,
   styles: [
     `
@@ -142,29 +147,43 @@ import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
     FormsModule,
     GameModeSelectorComponent,
     Checkbox,
+    JsonPipe,
   ],
 })
 export class GamePageComponent implements OnChanges {
-  private _userSelection = signal<Choice | null>(null);
-  private _npcSelection = signal<Choice | null>(null);
   private _revealed = signal(false);
 
   @Output() newGameEvent = new EventEmitter<void>();
   @Input() npcChoice: Choice | null = null;
-  @Output() npcChoiceRequested = new EventEmitter<string>();
+  @Output() npcChoiceRequested = new EventEmitter<{
+    gameId: number;
+    gameMode: GAME_MODE;
+  }>();
+  @Input() selectedGame: GamesEntity | null = null;
 
-  userSelection = this._userSelection.asReadonly();
-  npcSelection = this._npcSelection.asReadonly();
+  @Output() userSelectionChanged = new EventEmitter<{
+    gameId: number;
+    updatedGame: Partial<GamesEntity>;
+  }>();
+
   revealed = this._revealed.asReadonly();
   isLoggingEnabled = true;
 
   select(choice: Choice) {
-    this._userSelection.set(choice);
+    if (this.selectedGame) {
+      this.userSelectionChanged.emit({
+        gameId: this.selectedGame.id,
+        updatedGame: { playerChoice: choice.label },
+      });
+    }
   }
 
   reveal() {
-    if (!this._revealed()) {
-      this.npcChoiceRequested.emit(GAME_MODE[this.selectedGameMode().value]);
+    if (!this._revealed() && this.selectedGame) {
+      this.npcChoiceRequested.emit({
+        gameId: this.selectedGame.id,
+        gameMode: this.selectedGameMode().value,
+      });
 
       this._revealed.set(true);
     }
@@ -190,16 +209,19 @@ export class GamePageComponent implements OnChanges {
         return gameChoices;
     }
   });
+
+  getIconForChoice(choiceLabel: string | undefined): string {
+    if (!choiceLabel) return ''; // Wenn keine Wahl getroffen wurde, kein Icon
+    const choice = this.choices().find((c) => c.label === choiceLabel);
+    return choice ? choice.icon : ''; // Gib das Icon des gewählten Choices zurück
+  }
+
   onGameModeChange(mode: { label: string; value: GAME_MODE }) {
     this.selectedGameMode.set(mode);
-    this._userSelection.set(null);
-    this._npcSelection.set(null);
     this._revealed.set(false);
   }
 
   reset() {
-    this._userSelection.set(null);
-    this._npcSelection.set(null);
     this._revealed.set(false);
   }
 
@@ -209,7 +231,6 @@ export class GamePageComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['npcChoice'] && this.npcChoice) {
-      this._npcSelection.set(this.npcChoice);
       this._revealed.set(true);
     }
   }

@@ -9,6 +9,7 @@ import { GamePageComponent } from './game-page.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Choice, gameChoices } from '../utils/game-choices';
 import { SpsGameApi } from '../store/sps-game.api';
+import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
 
 @Component({
   selector: 'stone-paper-scissorcs-page',
@@ -28,9 +29,11 @@ import { SpsGameApi } from '../store/sps-game.api';
       <p-tabpanels>
         <p-tabpanel [value]="0">
           <game-page
+            [selectedGame]="selectedGame()"
             (newGameEvent)="startGame()"
             [npcChoice]="npcChoice"
             (npcChoiceRequested)="handleNpcChoiceRequest($event)"
+            (userSelectionChanged)="handleUserSelectionChanged($event)"
           />
         </p-tabpanel>
         <p-tabpanel [value]="1">
@@ -61,16 +64,8 @@ export class StonePaperScissorsPageComponent implements OnInit {
 
   private _tabIndex = 0;
 
-  get tabIndex() {
-    return this._tabIndex;
-  }
-
-  set tabIndex(val: number) {
-    this._tabIndex = val;
-    this.onTabChange({ index: val });
-  }
-
   games = this.store.games;
+  selectedGame = this.store.selectedGame;
 
   load() {
     this.store.load();
@@ -80,31 +75,39 @@ export class StonePaperScissorsPageComponent implements OnInit {
     this.store.initGame();
   }
 
-  onTabChange(event: any) {
-    this.router.navigate([], {
-      queryParams: { tab: this.tabIndex },
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  ngOnInit() {
-    this.route.queryParams.subscribe((params: { [key: string]: any }) => {
-      const tab = parseInt(params['tab'], 10);
-      if (!isNaN(tab)) {
-        this.tabIndex = tab;
-      }
-    });
-  }
-
   npcChoice: Choice | null = null;
 
-  handleNpcChoiceRequest(mode: string) {
-    this.api.getNpcChoice(mode).subscribe(({ choice }) => {
-      const matched = this.findChoiceByLabel(choice, mode);
-      if (matched) {
-        this.npcChoice = matched;
-      }
-    });
+  handleUserSelectionChanged(payload: any) {
+    this.store.updateGame(payload.gameId, payload.updatedGame);
+  }
+
+  handleNpcChoiceRequest(payload: any) {
+    console.log('handleNpcChoiceRequest', payload);
+    const { gameId, gameMode } = payload;
+    const gameModeKey = Object.keys(GAME_MODE).find(
+      (key) => GAME_MODE[key as keyof typeof GAME_MODE] === gameMode
+    );
+
+    if (gameModeKey) {
+      this.api.getNpcChoice(gameModeKey).subscribe(({ choice }) => {
+        const matched = this.findChoiceByLabel(choice, gameMode);
+        if (matched) {
+          this.npcChoice = matched;
+          this.store.updateGame(gameId, {
+            npcChoice: choice,
+            mode: gameMode,
+          });
+
+          const selectedGame = this.selectedGame();
+          if (selectedGame) {
+            this.api.updateResult(selectedGame).subscribe((response) => {
+              console.log('Spielergebnis:', response);
+              this.store.updateGame(gameId, { result: response.result });
+            });
+          }
+        }
+      });
+    }
   }
 
   findChoiceByLabel(label: string, mode: string): Choice | undefined {
@@ -125,5 +128,30 @@ export class StonePaperScissorsPageComponent implements OnInit {
         choices = gameChoices;
     }
     return choices.find((c) => c.label === label);
+  }
+
+  get tabIndex() {
+    return this._tabIndex;
+  }
+
+  set tabIndex(val: number) {
+    this._tabIndex = val;
+    this.onTabChange({ index: val });
+  }
+
+  onTabChange(event: any) {
+    this.router.navigate([], {
+      queryParams: { tab: this.tabIndex },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  ngOnInit() {
+    this.route.queryParams.subscribe((params: { [key: string]: any }) => {
+      const tab = parseInt(params['tab'], 10);
+      if (!isNaN(tab)) {
+        this.tabIndex = tab;
+      }
+    });
   }
 }

@@ -31,7 +31,6 @@ import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
           <game-page
             [selectedGame]="selectedGame()"
             (newGameEvent)="startGame()"
-            [npcChoice]="npcChoice"
             (npcChoiceRequested)="handleNpcChoiceRequest($event)"
             (userSelectionChanged)="handleUserSelectionChanged($event)"
           />
@@ -75,8 +74,6 @@ export class StonePaperScissorsPageComponent implements OnInit {
     this.store.initGame();
   }
 
-  npcChoice: Choice | null = null;
-
   handleUserSelectionChanged(payload: any) {
     this.store.updateGame(payload.gameId, payload.updatedGame);
   }
@@ -92,7 +89,6 @@ export class StonePaperScissorsPageComponent implements OnInit {
       this.api.getNpcChoice(gameModeKey).subscribe(({ choice }) => {
         const matched = this.findChoiceByLabel(choice, gameMode);
         if (matched) {
-          this.npcChoice = matched;
           this.store.updateGame(gameId, {
             npcChoice: choice,
             mode: gameMode,

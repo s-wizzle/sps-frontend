@@ -22,6 +22,8 @@ import {
   GAME_MODE,
   GamesEntity,
 } from '@sps-frontend/feature-stone-paper-scissors';
+import { GameActionBarComponent } from '../components/game-action-bar.component';
+import {determineGameState, GameState} from "../utils/game.state";
 
 @Component({
   selector: 'game-page',
@@ -29,8 +31,8 @@ import {
     <game-mode-selector
       [selected]="selectedGameMode()"
       (modeChanged)="onGameModeChange($event)"
-    >
-    </game-mode-selector>
+    />
+    <p-divider/>
 
     <div class="selection">
       <ng-container *ngIf="selectedGame?.npcChoice; else noNpcChoice">
@@ -48,26 +50,12 @@ import {
       </ng-template>
     </div>
 
-    <div class="button-container">
-      <p-button
-        class="reveal-button"
-        label="Reveal"
-        (onClick)="reveal()"
-        [disabled]="!selectedGame?.playerChoice"
-      />
-      <p-button
-        class="reveal-button"
-        label="New Game"
-        (onClick)="initGame()"
-        [disabled]="selectedGame?.playerChoice"
-      />
-      <p-button
-        icon="pi pi-refresh"
-        (onClick)="reset()"
-        [disabled]="!selectedGame?.playerChoice"
-        label="Zurücksetzen"
-      />
-    </div>
+    <game-action-bar
+      (reveal)="reveal()"
+      (reset)="reset()"
+      (init)="initGame()"
+      [state]="determineGameState(selectedGame, revealed)"
+    />
 
     <div class="selection">
       <ng-container *ngIf="selectedGame?.playerChoice; else noUserChoice">
@@ -84,7 +72,7 @@ import {
         </p-card>
       </ng-template>
     </div>
-    <p-divider />
+    <p-divider/>
 
     <div class="selection">
       <game-option
@@ -101,8 +89,6 @@ import {
       <p-checkbox [(ngModel)]="isLoggingEnabled" />
       <label> Ergebnisse loggen</label>
     </div>
-
-    {{ selectedGame | json }}
   `,
   styles: [
     `
@@ -123,16 +109,6 @@ import {
         text-align: center;
         margin: 1rem 0;
       }
-
-      .reveal-button {
-        margin: 1rem 0;
-      }
-
-      .button-container {
-        display: flex;
-        gap: 1rem;
-        align-items: center; /* Align buttons vertically in the middle */
-      }
     `,
   ],
   standalone: true,
@@ -141,20 +117,45 @@ import {
     NgIf,
     NgForOf,
     Card,
-    Button,
     Divider,
     DropdownModule,
     FormsModule,
     GameModeSelectorComponent,
     Checkbox,
-    JsonPipe,
+    GameActionBarComponent,
   ],
 })
-export class GamePageComponent implements OnChanges {
-  private _revealed = signal(false);
+export class GamePageComponent {
+
+  revealed = false;
+
+  initGame() {
+    this.newGameEvent.emit();
+    this.revealed = false;
+  }
+
+  reveal() {
+    /**
+     * hole npc choice
+     * hole result
+     * beende spiel mit speichern
+     */
+
+    if (!this.revealed && this.selectedGame) {
+      this.npcChoiceRequested.emit({
+        gameId: this.selectedGame.id,
+        gameMode: this.selectedGameMode().value,
+      });
+
+      this.revealed = true;
+    }
+  }
+
+  reset() {
+    this.revealed = false;
+  }
 
   @Output() newGameEvent = new EventEmitter<void>();
-  @Input() npcChoice: Choice | null = null;
   @Output() npcChoiceRequested = new EventEmitter<{
     gameId: number;
     gameMode: GAME_MODE;
@@ -166,7 +167,6 @@ export class GamePageComponent implements OnChanges {
     updatedGame: Partial<GamesEntity>;
   }>();
 
-  revealed = this._revealed.asReadonly();
   isLoggingEnabled = true;
 
   select(choice: Choice) {
@@ -178,16 +178,7 @@ export class GamePageComponent implements OnChanges {
     }
   }
 
-  reveal() {
-    if (!this._revealed() && this.selectedGame) {
-      this.npcChoiceRequested.emit({
-        gameId: this.selectedGame.id,
-        gameMode: this.selectedGameMode().value,
-      });
 
-      this._revealed.set(true);
-    }
-  }
 
   selectedGameMode = signal<{ label: string; value: GAME_MODE }>({
     label: 'Default',
@@ -218,20 +209,11 @@ export class GamePageComponent implements OnChanges {
 
   onGameModeChange(mode: { label: string; value: GAME_MODE }) {
     this.selectedGameMode.set(mode);
-    this._revealed.set(false);
+    this.revealed = false;
   }
 
-  reset() {
-    this._revealed.set(false);
-  }
 
-  initGame() {
-    this.newGameEvent.emit();
-  }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['npcChoice'] && this.npcChoice) {
-      this._revealed.set(true);
-    }
-  }
+  protected readonly GameState = GameState;
+  protected readonly determineGameState = determineGameState;
 }

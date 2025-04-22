@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { GameOptionComponent } from '../components/game-option.component';
 import { NgForOf, NgIf } from '@angular/common';
 import { Card } from 'primeng/card';
@@ -6,15 +6,18 @@ import { Button } from 'primeng/button';
 import { Divider } from 'primeng/divider';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
-
-type Choice = {
-  label: string;
-  icon: string;
-};
+import { GameModeSelectorComponent } from '../components/game-mode-selection.component';
+import { Choice, gameChoices } from '../utils/game-choices';
 
 @Component({
   selector: 'game-page',
   template: `
+    <game-mode-selector
+      [selected]="selectedGameMode()"
+      (modeChanged)="onGameModeChange($event)"
+    >
+    </game-mode-selector>
+
     <div class="selection">
       <ng-container *ngIf="npcSelection(); else noNpcChoice">
         <game-option
@@ -57,7 +60,7 @@ type Choice = {
 
     <div class="selection">
       <game-option
-        *ngFor="let choice of choices"
+        *ngFor="let choice of choices()"
         [label]="choice.label"
         [selected]="userSelection() === choice"
         [icon]="choice.icon"
@@ -101,32 +104,56 @@ type Choice = {
     Divider,
     DropdownModule,
     FormsModule,
+    GameModeSelectorComponent,
   ],
 })
 export class GamePageComponent {
-  choices: Choice[] = [
-    { label: 'stone', icon: 'assets/icon_lizard.png' },
-    { label: 'paper', icon: 'assets/icon_paper.png' },
-    { label: 'scissors', icon: 'assets/icon_scissors.png' },
-    { label: 'lizard', icon: 'assets/icon_lizard.png' },
-    { label: 'spock', icon: 'assets/icon_spock.png' },
-    { label: 'fire', icon: 'assets/icon_fire.png' },
-    { label: 'water', icon: 'assets/icon_water.png' },
-  ];
-
   private _userSelection = signal<Choice | null>(null);
   private _npcSelection = signal<Choice | null>(null);
+  private _revealed = signal(false);
 
   userSelection = this._userSelection.asReadonly();
   npcSelection = this._npcSelection.asReadonly();
+  revealed = this._revealed.asReadonly();
 
   select(choice: Choice) {
     this._userSelection.set(choice);
   }
 
   reveal() {
-    const random =
-      this.choices[Math.floor(Math.random() * this.choices.length)];
-    this._npcSelection.set(random);
+    if (!this._revealed()) {
+      const availableChoices = this.choices();
+      const random =
+        availableChoices[Math.floor(Math.random() * this.choices.length)];
+      this._npcSelection.set(random);
+      this._revealed.set(true);
+    }
+  }
+
+  selectedGameMode = signal<{ label: string; value: string }>({
+    label: 'Default',
+    value: 'default',
+  });
+
+  readonly choices = computed(() => {
+    switch (this.selectedGameMode().value) {
+      case 'default':
+        return gameChoices.filter((c) =>
+          ['stone', 'paper', 'scissors'].includes(c.label)
+        );
+      case 'hard':
+        return gameChoices.filter((c) =>
+          ['stone', 'paper', 'scissors', 'lizard', 'spock'].includes(c.label)
+        );
+      case 'expert':
+      default:
+        return gameChoices;
+    }
+  });
+  onGameModeChange(mode: { label: string; value: string }) {
+    this.selectedGameMode.set(mode);
+    this._userSelection.set(null);
+    this._npcSelection.set(null);
+    this._revealed.set(false);
   }
 }

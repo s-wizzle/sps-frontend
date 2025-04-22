@@ -8,6 +8,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { GameModeSelectorComponent } from '../components/game-mode-selection.component';
 import { Choice, gameChoices } from '../utils/game-choices';
+import { Checkbox } from 'primeng/checkbox';
 
 @Component({
   selector: 'game-page',
@@ -34,12 +35,20 @@ import { Choice, gameChoices } from '../utils/game-choices';
       </ng-template>
     </div>
 
-    <p-button
-      class="reveal-button"
-      label="Reveal"
-      (onClick)="reveal()"
-      [disabled]="!userSelection()"
-    />
+    <div class="button-container">
+      <p-button
+        class="reveal-button"
+        label="Reveal"
+        (onClick)="reveal()"
+        [disabled]="!userSelection()"
+      />
+      <p-button
+        class="reset-button"
+        icon="pi pi-refresh"
+        (onClick)="reset()"
+        label="Zurücksetzen"
+      />
+    </div>
 
     <div class="selection">
       <ng-container *ngIf="userSelection(); else noUserChoice">
@@ -68,6 +77,11 @@ import { Choice, gameChoices } from '../utils/game-choices';
       >
       </game-option>
     </div>
+
+    <div class="log-toggle">
+      <p-checkbox [(ngModel)]="isLoggingEnabled" />
+      <label> Ergebnisse loggen</label>
+    </div>
   `,
   styles: [
     `
@@ -92,6 +106,11 @@ import { Choice, gameChoices } from '../utils/game-choices';
       .reveal-button {
         margin: 1rem 0;
       }
+      .button-container {
+        display: flex;
+        gap: 1rem;
+        align-items: center; /* Align buttons vertically in the middle */
+      }
     `,
   ],
   standalone: true,
@@ -105,6 +124,7 @@ import { Choice, gameChoices } from '../utils/game-choices';
     DropdownModule,
     FormsModule,
     GameModeSelectorComponent,
+    Checkbox,
   ],
 })
 export class GamePageComponent {
@@ -115,6 +135,7 @@ export class GamePageComponent {
   userSelection = this._userSelection.asReadonly();
   npcSelection = this._npcSelection.asReadonly();
   revealed = this._revealed.asReadonly();
+  isLoggingEnabled = true;
 
   select(choice: Choice) {
     this._userSelection.set(choice);
@@ -152,6 +173,12 @@ export class GamePageComponent {
   });
   onGameModeChange(mode: { label: string; value: string }) {
     this.selectedGameMode.set(mode);
+    this._userSelection.set(null);
+    this._npcSelection.set(null);
+    this._revealed.set(false);
+  }
+
+  reset() {
     this._userSelection.set(null);
     this._npcSelection.set(null);
     this._revealed.set(false);

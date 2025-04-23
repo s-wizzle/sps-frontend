@@ -9,10 +9,14 @@ import { GamePageComponent } from './game-page.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SpsGameApi } from '../store/sps-game.api';
 import { EMPTY, switchMap, tap } from 'rxjs';
+import { Toast } from 'primeng/toast';
+import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'stone-paper-scissorcs-page',
   template: `
+    <p-toast></p-toast>
+
     <page-title
       [title]="'Stone Paper Scissors'"
       [description]="'Play the classic game of Stone Paper Scissors'"
@@ -53,6 +57,7 @@ import { EMPTY, switchMap, tap } from 'rxjs';
     DataPageComponent,
     MetricsPageComponent,
     GamePageComponent,
+    Toast,
   ],
 })
 export class StonePaperScissorsPageComponent implements OnInit {
@@ -60,6 +65,7 @@ export class StonePaperScissorsPageComponent implements OnInit {
   route = inject(ActivatedRoute);
   store = inject(StonePaperScissorsFacade);
   api = inject(SpsGameApi);
+  notification = inject(NotificationService);
 
   private _tabIndex = 0;
 
@@ -68,10 +74,12 @@ export class StonePaperScissorsPageComponent implements OnInit {
 
   load() {
     this.store.load();
+    this.notification.showSuccess('Games loaded successfully');
   }
 
   startGame() {
     this.store.initGame();
+    this.notification.showInfo('New game started');
   }
 
   handleUserSelectionChanged(payload: any) {
@@ -80,6 +88,7 @@ export class StonePaperScissorsPageComponent implements OnInit {
 
   handleResetGame(gameId: number) {
     this.store.resetGame(gameId);
+    this.notification.showInfo('Latest game cleared');
   }
 
   handleEvaluateGame(payload: any) {

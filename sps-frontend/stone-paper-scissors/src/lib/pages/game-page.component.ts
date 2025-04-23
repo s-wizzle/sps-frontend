@@ -25,10 +25,12 @@ import {
 import { Checkbox } from 'primeng/checkbox';
 import {
   GAME_MODE,
-  GamesEntity, Result,
+  GamesEntity,
+  Result,
 } from '@sps-frontend/feature-stone-paper-scissors';
 import { GameActionBarComponent } from '../components/game-action-bar.component';
 import { determineGameState } from '../utils/game.state';
+import { NotificationService } from '../services/notification.service';
 
 @Component({
   selector: 'game-page',
@@ -134,7 +136,7 @@ import { determineGameState } from '../utils/game.state';
     GameActionBarComponent,
   ],
 })
-export class GamePageComponent {
+export class GamePageComponent implements OnChanges {
   @Input() selectedGame: GamesEntity | null = null;
   @Output() newGameEvent = new EventEmitter<void>();
   @Output() userSelectionChanged = new EventEmitter<{
@@ -147,11 +149,15 @@ export class GamePageComponent {
   }>();
   @Output() resetGame = new EventEmitter<number>();
 
+  notification = inject(NotificationService);
+
   revealed = false;
   isLoggingEnabled = true;
+  private resultNotified = false;
 
   initGame() {
     this.newGameEvent.emit();
+    this.resultNotified = false;
     this.revealed = false;
   }
 
@@ -177,6 +183,7 @@ export class GamePageComponent {
   reset() {
     if (this.selectedGame) {
       this.resetGame.emit(this.selectedGame.id);
+      this.resultNotified = false;
       this.revealed = false;
     }
   }
@@ -217,5 +224,29 @@ export class GamePageComponent {
 
   isTie(): boolean {
     return this.revealed && this.selectedGame?.result === Result.DRAW;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      this.revealed &&
+      changes['selectedGame'] &&
+      this.selectedGame?.result &&
+      !this.resultNotified
+    ) {
+      this.resultNotified = true;
+      this.notification.clearAll();
+
+      switch (this.selectedGame.result) {
+        case Result.WIN:
+          this.notification.showSuccess('Win!', 'You won 🎉');
+          break;
+        case Result.LOSS:
+          this.notification.showError('Lose!', 'You lost 😢');
+          break;
+        case Result.DRAW:
+          this.notification.showInfo('Draw', 'It´s a draw 🤝');
+          break;
+      }
+    }
   }
 }

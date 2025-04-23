@@ -3,6 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import * as StonePaperScissorsActions from './stone-paper-scissors.actions';
 import { catchError, map, mergeMap, of, switchMap } from 'rxjs';
 import { SpsGameApi } from './sps-game.api';
+import { gameManagementError } from '../utils/sps-logger';
 
 @Injectable()
 export class StonePaperScissorsEffects {
@@ -22,6 +23,7 @@ export class StonePaperScissorsEffects {
           );
       }),
       catchError((error) => {
+        gameManagementError('request games - error', error);
         return of(StonePaperScissorsActions.loadGamesFailure({ error }));
       })
     )
@@ -63,6 +65,7 @@ export class StonePaperScissorsEffects {
           );
       }),
       catchError((error) => {
+        gameManagementError('request new game - error', error);
         return of(StonePaperScissorsActions.requestNewGameFailure({ error }));
       })
     )
@@ -77,6 +80,7 @@ export class StonePaperScissorsEffects {
           .pipe(map(() => StonePaperScissorsActions.removeGameSuccess()));
       }),
       catchError((error) => {
+        gameManagementError('request delete game - error', error);
         return of(StonePaperScissorsActions.removeGameFailure({ error }));
       })
     )
@@ -91,6 +95,7 @@ export class StonePaperScissorsEffects {
           .pipe(map(() => StonePaperScissorsActions.saveGameSuccess()));
       }),
       catchError((error) => {
+        gameManagementError('request put game - error', error);
         return of(StonePaperScissorsActions.saveGameFailure({ error }));
       })
     )

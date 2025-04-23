@@ -15,8 +15,8 @@ import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
   selector: 'stone-paper-scissorcs-page',
   template: `
     <page-title
-      [title]="'Stone Paper Scissors'"
-      [description]="'Play the classic game of Stone Paper Scissors'"
+        [title]="'Stone Paper Scissors'"
+        [description]="'Play the classic game of Stone Paper Scissors'"
     />
     <button (click)="load()">Load</button>
 
@@ -29,17 +29,18 @@ import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
       <p-tabpanels>
         <p-tabpanel [value]="0">
           <game-page
-            [selectedGame]="selectedGame()"
-            (newGameEvent)="startGame()"
-            (npcChoiceRequested)="handleNpcChoiceRequest($event)"
-            (userSelectionChanged)="handleUserSelectionChanged($event)"
+              [selectedGame]="selectedGame()"
+              (newGameEvent)="startGame()"
+              (evaluateGame)="handleEvaluateGame($event)"
+              (userSelectionChanged)="handleUserSelectionChanged($event)"
+              (resetGame)="handleResetGame($event)"
           />
         </p-tabpanel>
         <p-tabpanel [value]="1">
-          <metrics-page />
+          <metrics-page/>
         </p-tabpanel>
         <p-tabpanel [value]="2">
-          <data-page [games]="games()" />
+          <data-page [games]="games()"/>
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
@@ -78,8 +79,7 @@ export class StonePaperScissorsPageComponent implements OnInit {
     this.store.updateGame(payload.gameId, payload.updatedGame);
   }
 
-  handleNpcChoiceRequest(payload: any) {
-    console.log('handleNpcChoiceRequest', payload);
+  handleEvaluateGame(payload: any) {
     const { gameId, gameMode } = payload;
     const gameModeKey = Object.keys(GAME_MODE).find(
       (key) => GAME_MODE[key as keyof typeof GAME_MODE] === gameMode
@@ -104,6 +104,10 @@ export class StonePaperScissorsPageComponent implements OnInit {
         }
       });
     }
+  }
+
+  handleResetGame(gameId: number) {
+    this.store.resetGame(gameId);
   }
 
   findChoiceByLabel(label: string, mode: string): Choice | undefined {

@@ -29,17 +29,17 @@ import {determineGameState, GameState} from "../utils/game.state";
   selector: 'game-page',
   template: `
     <game-mode-selector
-      [selected]="selectedGameMode()"
-      (modeChanged)="onGameModeChange($event)"
+        [selected]="selectedGameMode()"
+        (modeChanged)="onGameModeChange($event)"
     />
     <p-divider/>
 
     <div class="selection">
       <ng-container *ngIf="selectedGame?.npcChoice; else noNpcChoice">
         <game-option
-          [label]="selectedGame?.npcChoice || ''"
-          [selected]="true"
-          [icon]="getIconForChoice(selectedGame?.npcChoice)"
+            [label]="selectedGame?.npcChoice || ''"
+            [selected]="true"
+            [icon]="getIconForChoice(selectedGame?.npcChoice)"
         >
         </game-option>
       </ng-container>
@@ -51,18 +51,18 @@ import {determineGameState, GameState} from "../utils/game.state";
     </div>
 
     <game-action-bar
-      (reveal)="reveal()"
-      (reset)="reset()"
-      (init)="initGame()"
-      [state]="determineGameState(selectedGame, revealed)"
+        (reveal)="reveal()"
+        (reset)="reset()"
+        (init)="initGame()"
+        [state]="determineGameState(selectedGame, revealed)"
     />
 
     <div class="selection">
       <ng-container *ngIf="selectedGame?.playerChoice; else noUserChoice">
         <game-option
-          [label]="selectedGame?.playerChoice || ''"
-          [selected]="true"
-          [icon]="getIconForChoice(selectedGame?.playerChoice)"
+            [label]="selectedGame?.playerChoice || ''"
+            [selected]="true"
+            [icon]="getIconForChoice(selectedGame?.playerChoice)"
         >
         </game-option>
       </ng-container>
@@ -76,17 +76,17 @@ import {determineGameState, GameState} from "../utils/game.state";
 
     <div class="selection">
       <game-option
-        *ngFor="let choice of choices()"
-        [label]="choice.label"
-        [selected]="selectedGame?.playerChoice === choice.label"
-        [icon]="choice.icon"
-        (optionSelected)="select($event)"
+          *ngFor="let choice of choices()"
+          [label]="choice.label"
+          [selected]="selectedGame?.playerChoice === choice.label"
+          [icon]="choice.icon"
+          (optionSelected)="select($event)"
       >
       </game-option>
     </div>
 
     <div class="log-toggle">
-      <p-checkbox [(ngModel)]="isLoggingEnabled" />
+      <p-checkbox [(ngModel)]="isLoggingEnabled"/>
       <label> Ergebnisse loggen</label>
     </div>
   `,
@@ -126,6 +126,12 @@ import {determineGameState, GameState} from "../utils/game.state";
   ],
 })
 export class GamePageComponent {
+  @Output() newGameEvent = new EventEmitter<void>();
+  @Output() evaluateGame = new EventEmitter<{
+    gameId: number;
+    gameMode: GAME_MODE;
+  }>();
+  @Output() resetGame = new EventEmitter<number>();
 
   revealed = false;
 
@@ -135,31 +141,25 @@ export class GamePageComponent {
   }
 
   reveal() {
-    /**
-     * hole npc choice
-     * hole result
-     * beende spiel mit speichern
-     */
-
-    if (!this.revealed && this.selectedGame) {
-      this.npcChoiceRequested.emit({
+    if (this.selectedGame) {
+      this.evaluateGame.emit({
         gameId: this.selectedGame.id,
         gameMode: this.selectedGameMode().value,
       });
-
       this.revealed = true;
     }
   }
 
   reset() {
-    this.revealed = false;
+    if (this.selectedGame) {
+      this.resetGame.emit(this.selectedGame.id);
+      this.revealed = false;
+    }
   }
 
-  @Output() newGameEvent = new EventEmitter<void>();
-  @Output() npcChoiceRequested = new EventEmitter<{
-    gameId: number;
-    gameMode: GAME_MODE;
-  }>();
+
+
+
   @Input() selectedGame: GamesEntity | null = null;
 
   @Output() userSelectionChanged = new EventEmitter<{

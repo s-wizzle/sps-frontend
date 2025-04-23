@@ -10,13 +10,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Choice, gameChoices } from '../utils/game-choices';
 import { SpsGameApi } from '../store/sps-game.api';
 import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
+import { EMPTY, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'stone-paper-scissorcs-page',
   template: `
     <page-title
-        [title]="'Stone Paper Scissors'"
-        [description]="'Play the classic game of Stone Paper Scissors'"
+      [title]="'Stone Paper Scissors'"
+      [description]="'Play the classic game of Stone Paper Scissors'"
     />
     <button (click)="load()">Load</button>
 
@@ -29,18 +30,18 @@ import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
       <p-tabpanels>
         <p-tabpanel [value]="0">
           <game-page
-              [selectedGame]="selectedGame()"
-              (newGameEvent)="startGame()"
-              (evaluateGame)="handleEvaluateGame($event)"
-              (userSelectionChanged)="handleUserSelectionChanged($event)"
-              (resetGame)="handleResetGame($event)"
+            [selectedGame]="selectedGame()"
+            (newGameEvent)="startGame()"
+            (evaluateGame)="handleEvaluateGame($event)"
+            (userSelectionChanged)="handleUserSelectionChanged($event)"
+            (resetGame)="handleResetGame($event)"
           />
         </p-tabpanel>
         <p-tabpanel [value]="1">
-          <metrics-page/>
+          <metrics-page />
         </p-tabpanel>
         <p-tabpanel [value]="2">
-          <data-page [games]="games()"/>
+          <data-page [games]="games()" />
         </p-tabpanel>
       </p-tabpanels>
     </p-tabs>
@@ -79,55 +80,34 @@ export class StonePaperScissorsPageComponent implements OnInit {
     this.store.updateGame(payload.gameId, payload.updatedGame);
   }
 
+  handleResetGame(gameId: number) {
+    this.store.resetGame(gameId);
+  }
+
   handleEvaluateGame(payload: any) {
     const { gameId, gameMode } = payload;
-    const gameModeKey = Object.keys(GAME_MODE).find(
-      (key) => GAME_MODE[key as keyof typeof GAME_MODE] === gameMode
-    );
 
-    if (gameModeKey) {
-      this.api.getNpcChoice(gameModeKey).subscribe(({ choice }) => {
-        const matched = this.findChoiceByLabel(choice, gameMode);
-        if (matched) {
+    this.api
+      .getNpcChoice(gameMode)
+      .pipe(
+        switchMap(({ choice: npcChoice }) => {
           this.store.updateGame(gameId, {
-            npcChoice: choice,
+            npcChoice,
             mode: gameMode,
           });
 
           const selectedGame = this.selectedGame();
           if (selectedGame) {
             this.api.updateResult(selectedGame).subscribe((response) => {
-              console.log('Spielergebnis:', response);
               this.store.updateGame(gameId, { result: response.result });
+              this.store.saveGame(gameId);
             });
           }
-        }
-      });
-    }
-  }
 
-  handleResetGame(gameId: number) {
-    this.store.resetGame(gameId);
-  }
-
-  findChoiceByLabel(label: string, mode: string): Choice | undefined {
-    let choices: Choice[];
-    switch (mode) {
-      case 'default':
-        choices = gameChoices.filter((c) =>
-          ['stone', 'paper', 'scissors'].includes(c.label)
-        );
-        break;
-      case 'hard':
-        choices = gameChoices.filter((c) =>
-          ['stone', 'paper', 'scissors', 'lizard', 'spock'].includes(c.label)
-        );
-        break;
-      case 'expert':
-      default:
-        choices = gameChoices;
-    }
-    return choices.find((c) => c.label === label);
+          return EMPTY;
+        })
+      )
+      .subscribe();
   }
 
   get tabIndex() {

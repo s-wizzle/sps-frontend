@@ -81,4 +81,18 @@ export class StonePaperScissorsEffects {
       })
     )
   );
+
+  saveGame$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(StonePaperScissorsActions.saveGame),
+      switchMap((action) => {
+        return this.api
+          .putGame(action.game)
+          .pipe(map(() => StonePaperScissorsActions.saveGameSuccess()));
+      }),
+      catchError((error) => {
+        return of(StonePaperScissorsActions.saveGameFailure({ error }));
+      })
+    )
+  );
 }

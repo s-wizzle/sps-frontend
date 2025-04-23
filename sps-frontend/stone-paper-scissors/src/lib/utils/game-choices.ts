@@ -16,9 +16,9 @@ export const gameChoices: Choice[] = [
 ];
 
 export const modeChoicesMap: Record<GAME_MODE, string[]> = {
-  0: ['stone', 'paper', 'scissors'],
-  1: ['stone', 'paper', 'scissors', 'lizard', 'spock'],
-  2: ['stone', 'paper', 'scissors', 'lizard', 'spock', 'fire', 'water'],
+  DEFAULT: ['stone', 'paper', 'scissors'],
+  HARD: ['stone', 'paper', 'scissors', 'lizard', 'spock'],
+  EXPERT: ['stone', 'paper', 'scissors', 'lizard', 'spock', 'fire', 'water'],
 };
 
 export function getIconForChoice(label: string, choices: Choice[]): string {

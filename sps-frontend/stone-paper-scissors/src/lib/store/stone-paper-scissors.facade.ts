@@ -6,6 +6,7 @@ import {
   selectAllGames,
   selectSelectedGame,
 } from '@sps-frontend/feature-stone-paper-scissors';
+import { generatedModuleName } from '@angular/compiler-cli/src/ngtsc/shims/src/util';
 
 @Injectable({ providedIn: 'root' })
 export class StonePaperScissorsFacade {
@@ -39,5 +40,12 @@ export class StonePaperScissorsFacade {
     this.store.dispatch(
       StonePaperScissorsActions.setSelectedGame({ gameId: null })
     );
+  }
+
+  saveGame(gameId: number) {
+    const game = this.games().find((game) => game.id === gameId);
+    if (game) {
+      this.store.dispatch(StonePaperScissorsActions.saveGame({ game: game }));
+    }
   }
 }

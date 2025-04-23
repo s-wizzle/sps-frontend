@@ -5,9 +5,9 @@ export enum Result {
 }
 
 export enum GAME_MODE {
-    DEFAULT,
-    HARD,
-    EXPERT,
+    DEFAULT= 'DEFAULT',
+    HARD = 'HARD',
+    EXPERT = 'EXPERT',
 }
 export interface GamesEntity {
     id: number;

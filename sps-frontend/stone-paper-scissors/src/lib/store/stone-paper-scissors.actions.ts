@@ -10,6 +10,15 @@ export const loadGamesFailure = createAction(
   '[Games] Load Games Failure',
   props<{ error: any }>()
 );
+export const removeGameSuccess = createAction(
+    '[Games] Remove Game Success'
+);
+
+export const removeGameFailure = createAction(
+    '[Games] Remove Game Failure',
+    props<{ error: any }>()
+);
+
 export const requestNewGame = createAction('[Gameplay] Request New Game');
 
 export const requestNewGameFailure = createAction(
@@ -32,7 +41,12 @@ export const updateGame = createAction(
   props<{ gameId: number; updateGame: Partial<GamesEntity> }>()
 );
 
+export const removeGame = createAction(
+  '[Gameplay] Delete Game',
+  props<{ gameId: number }>()
+);
+
 export const setSelectedGame = createAction(
   '[Gameplay] Set Selected Game',
-  props<{ gameId: number }>()
+  props<{ gameId: number | null }>()
 );

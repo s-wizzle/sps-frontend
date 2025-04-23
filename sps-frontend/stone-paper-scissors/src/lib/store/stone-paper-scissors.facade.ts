@@ -1,7 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as StonePaperScissorsActions from './stone-paper-scissors.actions';
-import {GamesEntity, selectAllGames, selectSelectedGame} from '@sps-frontend/feature-stone-paper-scissors';
+import {
+  GamesEntity,
+  selectAllGames,
+  selectSelectedGame,
+} from '@sps-frontend/feature-stone-paper-scissors';
 
 @Injectable({ providedIn: 'root' })
 export class StonePaperScissorsFacade {
@@ -25,6 +29,15 @@ export class StonePaperScissorsFacade {
   }
 
   updateGame(gameId: number, updatedGame: Partial<GamesEntity>) {
-    this.store.dispatch(StonePaperScissorsActions.updateGame({ gameId, updateGame: updatedGame }));
+    this.store.dispatch(
+      StonePaperScissorsActions.updateGame({ gameId, updateGame: updatedGame })
+    );
+  }
+
+  resetGame(gameId: number) {
+    this.store.dispatch(StonePaperScissorsActions.removeGame({ gameId }));
+    this.store.dispatch(
+      StonePaperScissorsActions.setSelectedGame({ gameId: null })
+    );
   }
 }

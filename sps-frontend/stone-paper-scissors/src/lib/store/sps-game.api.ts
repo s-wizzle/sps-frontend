@@ -29,8 +29,12 @@ export class SpsGameApi {
 
   updateResult(game: GamesEntity) {
     return this.http.patch<GamesEntity>(
-        this.baseUrl + 'sps-gameplay/round/result',
-        game
+      this.baseUrl + 'sps-gameplay/round/result',
+      game
     );
+  }
+
+  deleteGame(gameId: number) {
+    return this.http.delete<void>(this.baseUrl + 'sps-games/' + gameId);
   }
 }

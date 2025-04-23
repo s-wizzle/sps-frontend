@@ -50,6 +50,9 @@ const reducer = createReducer(
       },
       state
     );
+  }),
+  on(StonePaperScissorsActions.removeGame, (state, { gameId }) => {
+    return gamesAdapter.removeOne(gameId, state);
   })
 );
 

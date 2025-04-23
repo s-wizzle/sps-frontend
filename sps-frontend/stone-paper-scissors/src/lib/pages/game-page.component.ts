@@ -2,6 +2,7 @@ import {
   Component,
   computed,
   EventEmitter,
+  inject,
   Input,
   OnChanges,
   Output,
@@ -9,37 +10,41 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { GameOptionComponent } from '../components/game-option.component';
-import { JsonPipe, NgForOf, NgIf } from '@angular/common';
+import { NgForOf, NgIf } from '@angular/common';
 import { Card } from 'primeng/card';
-import { Button } from 'primeng/button';
 import { Divider } from 'primeng/divider';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { GameModeSelectorComponent } from '../components/game-mode-selection.component';
-import { Choice, gameChoices } from '../utils/game-choices';
+import {
+  Choice,
+  gameChoices,
+  getIconForChoice,
+  modeChoicesMap,
+} from '../utils/game-choices';
 import { Checkbox } from 'primeng/checkbox';
 import {
   GAME_MODE,
   GamesEntity,
 } from '@sps-frontend/feature-stone-paper-scissors';
 import { GameActionBarComponent } from '../components/game-action-bar.component';
-import {determineGameState, GameState} from "../utils/game.state";
+import { determineGameState } from '../utils/game.state';
 
 @Component({
   selector: 'game-page',
   template: `
     <game-mode-selector
-        [selected]="selectedGameMode()"
-        (modeChanged)="onGameModeChange($event)"
+      [selected]="selectedGameMode()"
+      (modeChanged)="onGameModeChange($event)"
     />
-    <p-divider/>
+    <p-divider />
 
     <div class="selection">
       <ng-container *ngIf="selectedGame?.npcChoice; else noNpcChoice">
         <game-option
-            [label]="selectedGame?.npcChoice || ''"
-            [selected]="true"
-            [icon]="getIconForChoice(selectedGame?.npcChoice)"
+          [label]="selectedGame?.npcChoice || ''"
+          [selected]="true"
+          [icon]="getIconForChoice(selectedGame?.npcChoice)"
         >
         </game-option>
       </ng-container>
@@ -51,18 +56,18 @@ import {determineGameState, GameState} from "../utils/game.state";
     </div>
 
     <game-action-bar
-        (reveal)="reveal()"
-        (reset)="reset()"
-        (init)="initGame()"
-        [state]="determineGameState(selectedGame, revealed)"
+      (reveal)="reveal()"
+      (reset)="reset()"
+      (init)="initGame()"
+      [state]="determineState()"
     />
 
     <div class="selection">
       <ng-container *ngIf="selectedGame?.playerChoice; else noUserChoice">
         <game-option
-            [label]="selectedGame?.playerChoice || ''"
-            [selected]="true"
-            [icon]="getIconForChoice(selectedGame?.playerChoice)"
+          [label]="selectedGame?.playerChoice || ''"
+          [selected]="true"
+          [icon]="getIconForChoice(selectedGame?.playerChoice)"
         >
         </game-option>
       </ng-container>
@@ -72,21 +77,21 @@ import {determineGameState, GameState} from "../utils/game.state";
         </p-card>
       </ng-template>
     </div>
-    <p-divider/>
+    <p-divider />
 
     <div class="selection">
       <game-option
-          *ngFor="let choice of choices()"
-          [label]="choice.label"
-          [selected]="selectedGame?.playerChoice === choice.label"
-          [icon]="choice.icon"
-          (optionSelected)="select($event)"
+        *ngFor="let choice of choices()"
+        [label]="choice.label"
+        [selected]="selectedGame?.playerChoice === choice.label"
+        [icon]="choice.icon"
+        (optionSelected)="userSelect($event)"
       >
       </game-option>
     </div>
 
     <div class="log-toggle">
-      <p-checkbox [(ngModel)]="isLoggingEnabled"/>
+      <p-checkbox [(ngModel)]="isLoggingEnabled" />
       <label> Ergebnisse loggen</label>
     </div>
   `,
@@ -126,7 +131,12 @@ import {determineGameState, GameState} from "../utils/game.state";
   ],
 })
 export class GamePageComponent {
+  @Input() selectedGame: GamesEntity | null = null;
   @Output() newGameEvent = new EventEmitter<void>();
+  @Output() userSelectionChanged = new EventEmitter<{
+    gameId: number;
+    updatedGame: Partial<GamesEntity>;
+  }>();
   @Output() evaluateGame = new EventEmitter<{
     gameId: number;
     gameMode: GAME_MODE;
@@ -134,10 +144,20 @@ export class GamePageComponent {
   @Output() resetGame = new EventEmitter<number>();
 
   revealed = false;
+  isLoggingEnabled = true;
 
   initGame() {
     this.newGameEvent.emit();
     this.revealed = false;
+  }
+
+  userSelect(choice: Choice) {
+    if (this.selectedGame) {
+      this.userSelectionChanged.emit({
+        gameId: this.selectedGame.id,
+        updatedGame: { playerChoice: choice.label },
+      });
+    }
   }
 
   reveal() {
@@ -157,28 +177,9 @@ export class GamePageComponent {
     }
   }
 
-
-
-
-  @Input() selectedGame: GamesEntity | null = null;
-
-  @Output() userSelectionChanged = new EventEmitter<{
-    gameId: number;
-    updatedGame: Partial<GamesEntity>;
-  }>();
-
-  isLoggingEnabled = true;
-
-  select(choice: Choice) {
-    if (this.selectedGame) {
-      this.userSelectionChanged.emit({
-        gameId: this.selectedGame.id,
-        updatedGame: { playerChoice: choice.label },
-      });
-    }
+  determineState() {
+    return determineGameState(this.selectedGame, this.revealed);
   }
-
-
 
   selectedGameMode = signal<{ label: string; value: GAME_MODE }>({
     label: 'Default',
@@ -186,34 +187,17 @@ export class GamePageComponent {
   });
 
   readonly choices = computed(() => {
-    switch (this.selectedGameMode().value) {
-      case GAME_MODE.DEFAULT:
-        return gameChoices.filter((c) =>
-          ['stone', 'paper', 'scissors'].includes(c.label)
-        );
-      case GAME_MODE.HARD:
-        return gameChoices.filter((c) =>
-          ['stone', 'paper', 'scissors', 'lizard', 'spock'].includes(c.label)
-        );
-      case GAME_MODE.EXPERT:
-      default:
-        return gameChoices;
-    }
+    return gameChoices.filter((choice) =>
+      modeChoicesMap[this.selectedGameMode().value].includes(choice.label)
+    );
   });
 
   getIconForChoice(choiceLabel: string | undefined): string {
-    if (!choiceLabel) return ''; // Wenn keine Wahl getroffen wurde, kein Icon
-    const choice = this.choices().find((c) => c.label === choiceLabel);
-    return choice ? choice.icon : ''; // Gib das Icon des gewählten Choices zurück
+    return getIconForChoice(choiceLabel || '', this.choices());
   }
 
   onGameModeChange(mode: { label: string; value: GAME_MODE }) {
     this.selectedGameMode.set(mode);
     this.revealed = false;
   }
-
-
-
-  protected readonly GameState = GameState;
-  protected readonly determineGameState = determineGameState;
 }

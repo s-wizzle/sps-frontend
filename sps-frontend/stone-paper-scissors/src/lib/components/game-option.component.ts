@@ -10,7 +10,12 @@ import { PrimeTemplate } from 'primeng/api';
   template: `
     <p-card
       (click)="selectOption()"
-      [ngClass]="{ selected: selected }"
+      [ngClass]="{
+        selected: selected,
+        winner: isWinner === true,
+        loser: isWinner === false,
+        tie: isTie
+      }"
       class="p-card game-option"
     >
       <ng-template pTemplate="title">
@@ -39,6 +44,21 @@ import { PrimeTemplate } from 'primeng/api';
       i {
         font-size: 1.5rem;
       }
+
+      .winner {
+        border: 2px solid green;
+        box-shadow: 0 0 8px green;
+      }
+
+      .loser {
+        border: 2px solid red;
+        box-shadow: 0 0 8px red;
+      }
+
+      .tie {
+        border: 2px solid gold;
+        box-shadow: 0 0 8px gold;
+      }
     `,
   ],
 })
@@ -47,7 +67,12 @@ export class GameOptionComponent {
   @Input() selected = false;
   @Input() selectable = true;
   @Input() icon = '';
-  @Output() optionSelected = new EventEmitter<{ label: string, icon: string }>();
+  @Input() isWinner: boolean | null = null;
+  @Input() isTie: boolean = false;
+  @Output() optionSelected = new EventEmitter<{
+    label: string;
+    icon: string;
+  }>();
 
   selectOption() {
     if (this.selectable) {

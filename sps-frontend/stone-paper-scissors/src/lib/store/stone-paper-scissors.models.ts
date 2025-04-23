@@ -1,7 +1,7 @@
 export enum Result {
     WIN = 'win',
-    LOSS = 'loss',
-    TIE = 'tie',
+    LOSS = 'lose',
+    DRAW = 'draw',
 }
 
 export enum GAME_MODE {

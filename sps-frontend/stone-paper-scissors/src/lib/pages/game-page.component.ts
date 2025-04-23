@@ -25,7 +25,7 @@ import {
 import { Checkbox } from 'primeng/checkbox';
 import {
   GAME_MODE,
-  GamesEntity,
+  GamesEntity, Result,
 } from '@sps-frontend/feature-stone-paper-scissors';
 import { GameActionBarComponent } from '../components/game-action-bar.component';
 import { determineGameState } from '../utils/game.state';
@@ -45,6 +45,8 @@ import { determineGameState } from '../utils/game.state';
           [label]="selectedGame?.npcChoice || ''"
           [selected]="true"
           [icon]="getIconForChoice(selectedGame?.npcChoice)"
+          [isWinner]="winnerIsNpc()"
+          [isTie]="isTie()"
         >
         </game-option>
       </ng-container>
@@ -68,6 +70,8 @@ import { determineGameState } from '../utils/game.state';
           [label]="selectedGame?.playerChoice || ''"
           [selected]="true"
           [icon]="getIconForChoice(selectedGame?.playerChoice)"
+          [isWinner]="winnerIsPlayer()"
+          [isTie]="isTie()"
         >
         </game-option>
       </ng-container>
@@ -199,5 +203,19 @@ export class GamePageComponent {
   onGameModeChange(mode: { label: string; value: GAME_MODE }) {
     this.selectedGameMode.set(mode);
     this.revealed = false;
+  }
+
+  winnerIsPlayer(): boolean | null {
+    if (!this.revealed || !this.selectedGame?.result) return null;
+    return this.selectedGame.result === Result.WIN;
+  }
+
+  winnerIsNpc(): boolean | null {
+    if (!this.revealed || !this.selectedGame?.result) return null;
+    return this.selectedGame.result === Result.LOSS;
+  }
+
+  isTie(): boolean {
+    return this.revealed && this.selectedGame?.result === Result.DRAW;
   }
 }

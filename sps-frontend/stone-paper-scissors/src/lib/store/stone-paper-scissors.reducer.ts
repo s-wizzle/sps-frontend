@@ -2,6 +2,7 @@ import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { GamesEntity } from './stone-paper-scissors.models';
 import { Action, createReducer, on } from '@ngrx/store';
 import * as StonePaperScissorsActions from './stone-paper-scissors.actions';
+import { gameManagementTrace } from '../utils/sps-logger';
 
 export const GAMES_FEATURE_KEY = 'games';
 
@@ -23,7 +24,7 @@ export const initialStonePaperScissorsState: StonePaperScissorsState =
 const reducer = createReducer(
   initialStonePaperScissorsState,
   on(StonePaperScissorsActions.loadGamesSuccess, (state, { games }) => {
-    console.debug('loadGamesSuccess action triggered');
+    gameManagementTrace('update store - setAll');
     return gamesAdapter.setAll(games, { ...state, loaded: true });
   }),
   on(StonePaperScissorsActions.loadGamesFailure, (state, { error }) => ({
@@ -31,18 +32,18 @@ const reducer = createReducer(
     error,
   })),
   on(StonePaperScissorsActions.addGame, (state, { game }) => {
-    console.debug('addGame action triggered');
+    gameManagementTrace('update store - setAll');
     return gamesAdapter.addOne(game, state);
   }),
   on(StonePaperScissorsActions.setSelectedGame, (state, { gameId }) => {
-    console.log('setSelectedGame action triggered');
+    gameManagementTrace('update store - setSelected');
     return {
       ...state,
       selectedId: gameId,
     };
   }),
   on(StonePaperScissorsActions.updateGame, (state, { gameId, updateGame }) => {
-    console.log('updateGame action triggered');
+    gameManagementTrace('update store - updateOne');
     return gamesAdapter.updateOne(
       {
         id: gameId,
@@ -52,6 +53,7 @@ const reducer = createReducer(
     );
   }),
   on(StonePaperScissorsActions.removeGame, (state, { gameId }) => {
+    gameManagementTrace('update store - removeOne');
     return gamesAdapter.removeOne(gameId, state);
   })
 );

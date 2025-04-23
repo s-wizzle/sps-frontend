@@ -21,7 +21,6 @@ import { NotificationService } from '../services/notification.service';
       [title]="'Stone Paper Scissors'"
       [description]="'Play the classic game of Stone Paper Scissors'"
     />
-    <button (click)="load()">Load</button>
 
     <p-tabs [(value)]="tabIndex">
       <p-tablist>
@@ -71,11 +70,6 @@ export class StonePaperScissorsPageComponent implements OnInit {
 
   games = this.store.games;
   selectedGame = this.store.selectedGame;
-
-  load() {
-    this.store.load();
-    this.notification.showSuccess('Games loaded successfully');
-  }
 
   startGame() {
     this.store.initGame();

@@ -6,11 +6,15 @@ import * as fromStonePaperScissors from './store/stone-paper-scissors.reducer';
 import { StonePaperScissorsPageComponent } from './pages/stone-paper-scissors-page.component';
 import { MessageService } from 'primeng/api';
 import { NotificationService } from './services/notification.service';
+import { SpsManagementResolver } from './sps-management.resolver';
 
 export const stonePaperScissorsRoutes: Route[] = [
   {
     path: '',
     component: StonePaperScissorsPageComponent,
+    resolve: {
+      games: SpsManagementResolver,
+    },
     providers: [
       provideState(
         fromStonePaperScissors.GAMES_FEATURE_KEY,

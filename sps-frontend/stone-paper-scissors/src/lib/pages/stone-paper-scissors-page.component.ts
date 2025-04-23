@@ -7,9 +7,7 @@ import { DataPageComponent } from './data-page.component';
 import { MetricsPageComponent } from './metrics-page.component';
 import { GamePageComponent } from './game-page.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Choice, gameChoices } from '../utils/game-choices';
 import { SpsGameApi } from '../store/sps-game.api';
-import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
 import { EMPTY, switchMap, tap } from 'rxjs';
 
 @Component({

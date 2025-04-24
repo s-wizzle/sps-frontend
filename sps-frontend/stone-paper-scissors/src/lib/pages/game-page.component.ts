@@ -9,13 +9,13 @@ import {
   signal,
   SimpleChanges,
 } from '@angular/core';
-import { GameOptionComponent } from '../components/game-option.component';
+import { GameOptionComponent } from '../components/gameplay/game-option.component';
 import { NgForOf, NgIf } from '@angular/common';
 import { Card } from 'primeng/card';
 import { Divider } from 'primeng/divider';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
-import { GameModeSelectorComponent } from '../components/game-mode-selection.component';
+import { GameModeSelectorComponent } from '../components/gameplay/game-mode-selection.component';
 import {
   Choice,
   gameChoices,
@@ -28,7 +28,7 @@ import {
   GamesEntity,
   Result,
 } from '@sps-frontend/feature-stone-paper-scissors';
-import { GameActionBarComponent } from '../components/game-action-bar.component';
+import { GameActionBarComponent } from '../components/gameplay/game-action-bar.component';
 import { determineGameState } from '../utils/game.state';
 import { NotificationService } from '../services/notification.service';
 

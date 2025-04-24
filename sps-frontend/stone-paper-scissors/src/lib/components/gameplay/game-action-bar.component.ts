@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Button } from 'primeng/button';
-import { GameState, getButtonState } from '../utils/game.state';
+import { GameState, getButtonState } from '../../utils/game.state';
 
 @Component({
   selector: 'game-action-bar',

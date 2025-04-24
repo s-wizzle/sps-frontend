@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import * as StonePaperScissorsActions from './stone-paper-scissors.actions';
 import { catchError, map, mergeMap, of, switchMap } from 'rxjs';
-import { SpsGameApi } from './sps-game.api';
+import { SpsGameApi } from '../services/sps-game.api';
 import { gameManagementError } from '../utils/sps-logger';
 
 @Injectable()

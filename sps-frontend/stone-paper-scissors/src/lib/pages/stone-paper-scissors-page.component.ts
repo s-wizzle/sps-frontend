@@ -7,8 +7,8 @@ import { DataPageComponent } from './data-page.component';
 import { MetricsPageComponent } from './metrics-page.component';
 import { GamePageComponent } from './game-page.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SpsGameApi } from '../store/sps-game.api';
-import { EMPTY, switchMap, tap } from 'rxjs';
+import { SpsGameApi } from '../services/sps-game.api';
+import { EMPTY, switchMap } from 'rxjs';
 import { Toast } from 'primeng/toast';
 import { NotificationService } from '../services/notification.service';
 

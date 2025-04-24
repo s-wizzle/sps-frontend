@@ -37,10 +37,10 @@ import { GamesEntity } from '@sps-frontend/feature-stone-paper-scissors';
       </ng-template>
     </p-table>
   `,
-  styles: ``,
+  styles: [],
   standalone: true,
   imports: [TableModule],
 })
-export class StonePaperScissorsTableComponent {
+export class SpsTableComponent {
   @Input() games: GamesEntity[] = [];
 }

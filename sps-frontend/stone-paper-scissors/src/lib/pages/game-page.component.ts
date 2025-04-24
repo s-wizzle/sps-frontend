@@ -108,6 +108,8 @@ import { NotificationService } from '../services/notification.service';
         flex-direction: column;
         justify-content: flex-start;
         align-items: center;
+        background-color: #f9f9f9;
+        padding: 8px 8px;
       }
 
       .selection {

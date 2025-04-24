@@ -4,6 +4,9 @@ import * as StonePaperScissorsActions from './stone-paper-scissors.actions';
 import {
   GamesEntity,
   selectAllGames,
+  selectChoiceCounts,
+  selectTotalGamesPlayedPerDay,
+  selectResultCounts,
   selectSelectedGame,
 } from '@sps-frontend/feature-stone-paper-scissors';
 import { generatedModuleName } from '@angular/compiler-cli/src/ngtsc/shims/src/util';
@@ -48,4 +51,11 @@ export class StonePaperScissorsFacade {
       this.store.dispatch(StonePaperScissorsActions.saveGame({ game: game }));
     }
   }
+
+  /**
+   * Metrics selections
+   */
+  gamesPlayed = this.store.selectSignal(selectTotalGamesPlayedPerDay);
+  choiceCounts = this.store.selectSignal(selectChoiceCounts);
+  resultCounts = this.store.selectSignal(selectResultCounts);
 }

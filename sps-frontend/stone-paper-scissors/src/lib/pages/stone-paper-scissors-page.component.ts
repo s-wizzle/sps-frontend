@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PageTitleComponent } from '../../../../src/app/components/page-title/page-title.component';
 import { TabsModule } from 'primeng/tabs';
-import { StonePaperScissorsFacade } from '../store/stone-paper-scissors.facade';
+import { SpsManagementFacade } from '../services/sps-management.facade';
 import { DataPageComponent } from './data-page.component';
 import { MetricsPageComponent } from './metrics-page.component';
 import { GamePageComponent } from './game-page.component';
@@ -62,7 +62,7 @@ import { NotificationService } from '../services/notification.service';
 export class StonePaperScissorsPageComponent implements OnInit {
   router = inject(Router);
   route = inject(ActivatedRoute);
-  store = inject(StonePaperScissorsFacade);
+  store = inject(SpsManagementFacade);
   api = inject(SpsGameApi);
   notification = inject(NotificationService);
 

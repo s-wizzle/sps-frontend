@@ -1,17 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import * as StonePaperScissorsActions from './stone-paper-scissors.actions';
+import * as StonePaperScissorsActions from '../store/stone-paper-scissors.actions';
 import {
   GamesEntity,
   selectAllGames,
-  selectChoiceCounts,
-  selectTotalGamesPlayedPerDay,
-  selectResultCounts,
   selectSelectedGame,
 } from '@sps-frontend/feature-stone-paper-scissors';
 
 @Injectable({ providedIn: 'root' })
-export class StonePaperScissorsFacade {
+export class SpsManagementFacade {
   store = inject(Store);
 
   dispatch(action: any) {
@@ -50,11 +47,4 @@ export class StonePaperScissorsFacade {
       this.store.dispatch(StonePaperScissorsActions.saveGame({ game: game }));
     }
   }
-
-  /**
-   * Metrics selections
-   */
-  gamesPlayed = this.store.selectSignal(selectTotalGamesPlayedPerDay);
-  choiceCounts = this.store.selectSignal(selectChoiceCounts);
-  resultCounts = this.store.selectSignal(selectResultCounts);
 }

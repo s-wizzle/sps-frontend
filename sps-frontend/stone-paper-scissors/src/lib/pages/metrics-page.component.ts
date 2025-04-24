@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { PieChartComponent } from '../components/charts/pie-chart.component';
-import { StonePaperScissorsFacade } from '../store/stone-paper-scissors.facade';
 import { BarChartVerticalComponent } from '../components/charts/bar-chart-vertical.component';
 import { BarChartHorizontalComponent } from '../components/charts/bar-chart-horizontal.component';
 import { BarChartStackedComponent } from '../components/charts/bar-chart-stacked.component';
 import { RadarChartComponent } from '../components/charts/radar-chart.component';
 import { LineChartComponent } from '../components/charts/line-chart.component';
 import { Card } from 'primeng/card';
+import { SpsMetricsFacade } from '../services/sps-metrics.facade';
 
 @Component({
   selector: 'metrics-page',
@@ -91,7 +91,7 @@ import { Card } from 'primeng/card';
   ],
 })
 export class MetricsPageComponent {
-  store = inject(StonePaperScissorsFacade);
+  store = inject(SpsMetricsFacade);
 
   games = this.store.games;
   gamesPlayedCount = this.store.gamesPlayed;

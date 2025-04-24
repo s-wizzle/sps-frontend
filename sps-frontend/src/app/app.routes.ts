@@ -7,4 +7,9 @@ export const appRoutes: Route[] = [
       import('@sps-frontend/feature-stone-paper-scissors').then((m) => m.stonePaperScissorsRoutes
       ),
   },
+  {
+    path: '**',
+    redirectTo: 'stone-paper-scissors',
+    pathMatch: 'full'
+  }
 ];

@@ -9,7 +9,7 @@ import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
   imports: [DropdownModule, FormsModule],
   template: `
     <div class="game-mode-selector">
-      <p-dropdown
+      Game Mode: <p-dropdown
         [options]="modes"
         [(ngModel)]="selected"
         placeholder="Select Game Mode"

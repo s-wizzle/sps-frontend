@@ -53,7 +53,7 @@ import { NotificationService } from '../services/notification.service';
         </game-option>
       </ng-container>
       <ng-template #noNpcChoice>
-        <p-card header="NPC Auswahl" class="user-selection">
+        <p-card header="NPC Selection" class="user-selection">
           <i>?</i>
         </p-card>
       </ng-template>
@@ -78,8 +78,8 @@ import { NotificationService } from '../services/notification.service';
         </game-option>
       </ng-container>
       <ng-template #noUserChoice>
-        <p-card header="Deine Auswahl" class="user-selection">
-          <i>Bitte wähle eine Option</i>
+        <p-card header="Selection" class="user-selection">
+          <i>Make your choice</i>
         </p-card>
       </ng-template>
     </div>
@@ -98,7 +98,7 @@ import { NotificationService } from '../services/notification.service';
 
     <div class="log-toggle">
       <p-checkbox [(ngModel)]="isLoggingEnabled" />
-      <label> Ergebnisse loggen</label>
+      <label> Log Results</label>
     </div>
   `,
   styles: [

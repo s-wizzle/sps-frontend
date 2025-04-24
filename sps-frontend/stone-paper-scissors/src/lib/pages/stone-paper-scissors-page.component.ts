@@ -19,7 +19,7 @@ import { NotificationService } from '../services/notification.service';
 
     <page-title
       [title]="'Stone Paper Scissors'"
-      [description]="'Play the classic game of Stone Paper Scissors'"
+      [description]="'Play the classic or Sheldon Cooper game of Stone Paper Scissors'"
     />
 
     <p-tabs [(value)]="tabIndex">

@@ -25,7 +25,7 @@ import { GameState, getButtonState } from '../utils/game.state';
       <p-button
         icon="pi pi-refresh"
         (onClick)="reset.emit()"
-        label="Zurücksetzen"
+        label="Reset"
         [disabled]="buttonStates.resetDisabled"
       />
     </div>
@@ -39,7 +39,7 @@ import { GameState, getButtonState } from '../utils/game.state';
       .button-container {
         display: flex;
         gap: 1rem;
-        align-items: center; /* Align buttons vertically in the middle */
+        align-items: center;
       }
     `,
   ],

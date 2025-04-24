@@ -12,7 +12,7 @@ import { GAME_MODE } from '@sps-frontend/feature-stone-paper-scissors';
       <p-dropdown
         [options]="modes"
         [(ngModel)]="selected"
-        placeholder="Spielmodus wählen"
+        placeholder="Select Game Mode"
         (onChange)="modeChanged.emit(selected)"
         optionLabel="label"
       ></p-dropdown>

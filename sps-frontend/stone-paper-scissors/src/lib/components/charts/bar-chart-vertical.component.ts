@@ -46,7 +46,7 @@ export class BarChartVerticalComponent implements OnChanges {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: false, // 👈 deaktiviert Legende
+          display: false
         },
       },
       scales: {

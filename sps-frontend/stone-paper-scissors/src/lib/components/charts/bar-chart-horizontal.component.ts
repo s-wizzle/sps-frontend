@@ -43,7 +43,7 @@ export class BarChartHorizontalComponent implements OnChanges {
     this.chartOptions = {
       responsive: true,
       maintainAspectRatio: false,
-      indexAxis: 'y', // 👈 Horizontaler Balken
+      indexAxis: 'y',
       plugins: {
         legend: {
           display: false,

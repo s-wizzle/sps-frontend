@@ -9,7 +9,6 @@ import {
   selectResultCounts,
   selectSelectedGame,
 } from '@sps-frontend/feature-stone-paper-scissors';
-import { generatedModuleName } from '@angular/compiler-cli/src/ngtsc/shims/src/util';
 
 @Injectable({ providedIn: 'root' })
 export class StonePaperScissorsFacade {
